@@ -91,6 +91,21 @@ docker compose up -d
 ```
 Then open http://localhost:3000.
 
+## Uninstalling
+
+When you're done with the course and want to reclaim disk space, run the teardown script. It asks for confirmation before each step — nothing is deleted without your approval.
+
+**macOS:**
+```bash
+chmod +x teardown.sh
+./teardown.sh
+```
+
+**Windows:**
+```powershell
+.\teardown.ps1
+```
+
 ## Troubleshooting
 
 | Problem | Fix |
