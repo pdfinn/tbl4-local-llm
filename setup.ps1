@@ -12,7 +12,7 @@ function Fail($msg)  { Write-Host "[ERR] $msg" -ForegroundColor Red; exit 1 }
 
 Write-Host ""
 Write-Host "========================================="
-Write-Host "  TBL4 Local LLM Setup"
+Write-Host "  Tarkas Brainlab IV — Local LLM Setup"
 Write-Host "========================================="
 Write-Host ""
 

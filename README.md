@@ -1,11 +1,20 @@
-# TBL4 Local LLM
+<p align="center">
+  <img src="logo.png" alt="Tarkas Brainlab IV" width="200">
+</p>
 
-Run a large language model locally on your laptop with a ChatGPT-like web interface. No cloud, no API keys, no cost.
+<h1 align="center">Tarkas Brainlab IV — Local LLM</h1>
+
+<p align="center">
+  Run a large language model locally on your laptop with a ChatGPT-like web interface.<br>
+  No cloud. No API keys. No cost.
+</p>
+
+---
 
 ## What you get
 
-- **Ollama** — runs the LLM on your machine (uses your GPU for speed)
-- **Open WebUI** — a web-based chat interface at `http://localhost:3000`
+- **[Ollama](https://ollama.com)** — runs the LLM on your machine (uses your GPU for speed)
+- **[Open WebUI](https://github.com/open-webui/open-webui)** — a web-based chat interface at `http://localhost:3000`
 
 ## Prerequisites
 
@@ -93,3 +102,9 @@ Then open http://localhost:3000.
 | Windows script won't run | Run: `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned` |
 | Web UI shows a blank page on first launch | Wait about a minute — it downloads components on first start |
 | macOS asks for password during setup | This is the Ollama installer — enter your Mac login password |
+
+---
+
+<p align="center">
+  <a href="https://github.com/Tarkas-Brainlab-IV">Tarkas Brainlab IV</a>
+</p>

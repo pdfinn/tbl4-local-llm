@@ -16,7 +16,7 @@ fail()  { echo -e "${RED}[ERR]${NC} $1"; exit 1; }
 
 echo ""
 echo "========================================="
-echo "  TBL4 Local LLM Setup"
+echo "  Tarkas Brainlab IV — Local LLM Setup"
 echo "========================================="
 echo ""
 
