@@ -2,7 +2,8 @@
 # This script installs everything you need to run a local LLM with a web UI.
 # It is safe to run multiple times.
 #
-# Run in PowerShell:  .\setup.ps1
+# Students: just double-click setup_windows.bat in File Explorer.
+# This file is the internal script the wrapper calls.
 
 $ErrorActionPreference = "Stop"
 
@@ -137,12 +138,13 @@ Write-Host ""
 Write-Host "  Open your browser to:"
 Write-Host "  http://localhost:$WebuiPort"
 Write-Host ""
-Write-Host "  To stop everything later:"
-Write-Host "    docker compose down"
-Write-Host "    (Close the Ollama app from the system tray)"
+Write-Host "  Next time, just double-click setup_windows.bat"
+Write-Host "  again. It is safe to re-run any time and"
+Write-Host "  will bring everything back up for you."
 Write-Host ""
-Write-Host "  To start again next time:"
-Write-Host "    ollama serve"
-Write-Host "    docker compose up -d"
+Write-Host "  Advanced (from the command line):"
+Write-Host "    Stop:  docker compose down"
+Write-Host "    Start: docker compose up -d"
+Write-Host "           (make sure Ollama is running)"
 Write-Host "========================================="
 Write-Host ""

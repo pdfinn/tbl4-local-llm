@@ -29,33 +29,23 @@ The setup script installs everything else automatically (including [Ollama](http
 
 ## Setup
 
-### macOS
-
-Open **Terminal** and run:
-
-```bash
-git clone https://github.com/pdfinn/tbl4-local-llm.git
-cd tbl4-local-llm
-chmod +x setup.sh
-./setup.sh
-```
-
-> The Ollama installer may ask for your **password** once — this is normal. It needs it to add the `ollama` command to your system.
-
-### Windows
-
 1. [Download the repository as a ZIP](https://github.com/pdfinn/tbl4-local-llm/archive/refs/heads/main.zip) and unzip it anywhere (e.g. your Desktop).
-2. Open the unzipped folder and **double-click `setup.bat`**.
+2. Open the unzipped folder and double-click the file for your operating system:
+   - **Windows:** `setup_windows.bat`
+   - **macOS:** `setup_macos.command`
 
-That's it — a window will open and walk you through the install. Leave it open until it finishes.
+A window opens and walks you through the install. Leave it open until it finishes.
+
+> **macOS first run:** Gatekeeper may block the file. Right-click `setup_macos.command` → **Open** → **Open** to approve it once. You will also be asked for your **password** during install — this is the Ollama installer adding the `ollama` command to your system.
 
 <details>
 <summary>Prefer the command line?</summary>
 
-```powershell
+```bash
 git clone https://github.com/pdfinn/tbl4-local-llm.git
 cd tbl4-local-llm
-.\setup.bat
+./setup_macos.command       # macOS
+.\setup_windows.bat         # Windows
 ```
 
 </details>
@@ -83,34 +73,40 @@ Some good options:
 | `mistral` | 7B | Longer, more detailed answers |
 | `llama3.2:1b` | 1B | Older/slower machines |
 
-## Starting and stopping
+## Using it next time
 
-**Stop everything:**
+Just run the setup again — it is idempotent and will bring everything back up for you.
+
+- **Windows:** double-click `setup_windows.bat`.
+- **macOS:** double-click `setup_macos.command`.
+
+Then open **http://localhost:3000**.
+
+To fully stop everything (e.g., to free memory or close your laptop), quit Docker Desktop — Ollama will keep running in the background and uses very little memory when idle. Next session, re-run the setup.
+
+<details>
+<summary>Advanced: start/stop from the command line</summary>
+
 ```bash
+# Stop
 docker compose down
 # Close Ollama: quit from menu bar (macOS) or system tray (Windows)
-```
 
-**Start again later:**
-```bash
-ollama serve          # macOS terminal (Windows: open the Ollama app)
+# Start again
+ollama serve          # macOS Terminal (on Windows, open the Ollama app)
 docker compose up -d
 ```
-Then open http://localhost:3000.
+
+</details>
 
 ## Uninstalling
 
 When you're done with the course and want to reclaim disk space, run the teardown script. It asks for confirmation before each step — nothing is deleted without your approval.
 
-**macOS:**
-```bash
-chmod +x teardown.sh
-./teardown.sh
-```
+Double-click the file for your operating system:
 
-**Windows:**
-
-Double-click `teardown.bat`.
+- **Windows:** `teardown_windows.bat`
+- **macOS:** `teardown_macos.command`
 
 ## Troubleshooting
 
@@ -120,7 +116,8 @@ Double-click `teardown.bat`.
 | Web UI shows "Ollama not reachable" | Make sure Ollama is running: `ollama serve` |
 | Model is very slow | Try a smaller model: edit `.env` and set `MODEL=llama3.2:1b` |
 | Port 3000 is already in use | Edit `.env` and change `WEBUI_PORT` to another number (e.g., `3001`) |
-| Windows: setup window flashes and closes | Right-click `setup.bat` → **Run as administrator**, or run it from an already-open PowerShell/Command Prompt so you can read any error |
+| Windows: setup window flashes and closes | Right-click `setup_windows.bat` → **Run as administrator**, or run it from an already-open PowerShell/Command Prompt so you can read any error |
+| macOS: "cannot be opened because it is from an unidentified developer" | Right-click `setup_macos.command` → **Open** → **Open**. You only need to do this once. |
 | Web UI shows a blank page on first launch | Wait about a minute — it downloads components on first start |
 | macOS asks for password during setup | This is the Ollama installer — enter your Mac login password |
 
