@@ -5,6 +5,10 @@ set -euo pipefail
 # This script installs everything you need to run a local LLM with a web UI.
 # It is safe to run multiple times.
 
+# Run from the script's own directory so double-clicking in Finder works
+# (Finder launches .command files with $HOME as the cwd).
+cd "$(dirname "${BASH_SOURCE[0]}")"
+
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'

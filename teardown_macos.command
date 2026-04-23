@@ -5,6 +5,10 @@ set -euo pipefail
 # Safely removes the local LLM stack. Asks before each step.
 # Nothing is deleted without your confirmation.
 
+# Run from the script's own directory so double-clicking in Finder works
+# (Finder launches .command files with $HOME as the cwd).
+cd "$(dirname "${BASH_SOURCE[0]}")"
+
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'

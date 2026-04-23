@@ -118,6 +118,7 @@ Double-click the file for your operating system:
 | Port 3000 is already in use | Edit `.env` and change `WEBUI_PORT` to another number (e.g., `3001`) |
 | Windows: setup window flashes and closes | Right-click `setup_windows.bat` → **Run as administrator**, or run it from an already-open PowerShell/Command Prompt so you can read any error |
 | macOS: "cannot be opened because it is from an unidentified developer" | Right-click `setup_macos.command` → **Open** → **Open**. You only need to do this once. |
+| macOS: Terminal window shows `zsh compinit: insecure directories` and then closes with `no such file or directory` | Your shell startup is prompting before the script can run. Open Terminal and run: `compaudit \| xargs chmod g-w,o-w` then double-click `setup_macos.command` again. |
 | Web UI shows a blank page on first launch | Wait about a minute — it downloads components on first start |
 | macOS asks for password during setup | This is the Ollama installer — enter your Mac login password |
 
