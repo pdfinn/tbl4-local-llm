@@ -68,28 +68,49 @@ if (-not $ollamaInstalled) {
 Info "Ollama is installed"
 
 # ─── Start Ollama ────────────────────────────────────────────────────────────
-$ollamaRunning = $false
-try {
-    $null = Invoke-RestMethod -Uri "http://localhost:11434/api/tags" -TimeoutSec 2
-    $ollamaRunning = $true
-} catch {}
+function Test-OllamaUp {
+    # Use /api/version: it is a trivial endpoint that does not touch disk.
+    # /api/tags can take several seconds on machines with many models, which
+    # made the old 2-second timeout spuriously fail on healthy systems.
+    try {
+        $null = Invoke-RestMethod -Uri "http://localhost:11434/api/version" -TimeoutSec 5
+        return $true
+    } catch {
+        return $false
+    }
+}
+
+$ollamaRunning = Test-OllamaUp
 
 if (-not $ollamaRunning) {
-    Write-Host ""
-    Warn "Starting Ollama..."
-    Start-Process "ollama" -ArgumentList "serve" -WindowStyle Hidden
+    # On Windows, Ollama normally runs as a tray app that auto-starts at login.
+    # After a fresh install or reboot the tray app may still be coming up, so
+    # only launch a new instance if nothing is already starting.
+    $trayApp = Get-Process -Name "ollama app" -ErrorAction SilentlyContinue
+    if (-not $trayApp) {
+        Write-Host ""
+        Warn "Starting Ollama..."
+        $trayAppPath = Join-Path $env:LOCALAPPDATA "Programs\Ollama\ollama app.exe"
+        if (Test-Path -LiteralPath $trayAppPath) {
+            Start-Process -FilePath $trayAppPath
+        } else {
+            Start-Process "ollama" -ArgumentList "serve" -WindowStyle Hidden
+        }
+    } else {
+        Write-Host ""
+        Warn "Ollama is starting up, waiting..."
+    }
 
-    for ($i = 0; $i -lt 30; $i++) {
+    for ($i = 0; $i -lt 60; $i++) {
         Start-Sleep -Seconds 1
-        try {
-            $null = Invoke-RestMethod -Uri "http://localhost:11434/api/tags" -TimeoutSec 2
+        if (Test-OllamaUp) {
             $ollamaRunning = $true
             break
-        } catch {}
+        }
     }
 
     if (-not $ollamaRunning) {
-        Fail "Ollama failed to start. Try running 'ollama serve' manually."
+        Fail "Ollama did not respond within 60 seconds. Open the Ollama app from the Start menu and re-run this setup."
     }
 }
 Info "Ollama is running"
