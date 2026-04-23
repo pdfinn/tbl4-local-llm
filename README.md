@@ -18,12 +18,14 @@
 
 ## Prerequisites
 
-Install this **before** running setup:
+Install this **once, before** running setup:
 
 - **Docker Desktop** — [download here](https://www.docker.com/products/docker-desktop/)
-   - Install it, open it, and make sure it is **running** (you should see the Docker whale icon in your menu bar / system tray)
+   - Run the installer and accept the defaults.
+   - **Windows only:** Docker will ask to enable WSL 2 and will require a **reboot** after install. This is normal and only happens once.
+   - After reboot, open Docker Desktop, accept the agreement, and wait until the whale icon in your system tray (Windows) or menu bar (macOS) is steady (not animated). That means Docker is running.
 
-The setup script will install everything else automatically (including [Ollama](https://ollama.com/download)).
+The setup script installs everything else automatically (including [Ollama](https://ollama.com/download)).
 
 ## Setup
 
@@ -42,16 +44,21 @@ chmod +x setup.sh
 
 ### Windows
 
-Open **PowerShell** and run:
+1. [Download the repository as a ZIP](https://github.com/pdfinn/tbl4-local-llm/archive/refs/heads/main.zip) and unzip it anywhere (e.g. your Desktop).
+2. Open the unzipped folder and **double-click `setup.bat`**.
+
+That's it — a window will open and walk you through the install. Leave it open until it finishes.
+
+<details>
+<summary>Prefer the command line?</summary>
 
 ```powershell
 git clone https://github.com/pdfinn/tbl4-local-llm.git
 cd tbl4-local-llm
-.\setup.ps1
+.\setup.bat
 ```
 
-> If you get a script execution error, run this first:
-> `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned`
+</details>
 
 ## Using it
 
@@ -102,9 +109,8 @@ chmod +x teardown.sh
 ```
 
 **Windows:**
-```powershell
-.\teardown.ps1
-```
+
+Double-click `teardown.bat`.
 
 ## Troubleshooting
 
@@ -114,7 +120,7 @@ chmod +x teardown.sh
 | Web UI shows "Ollama not reachable" | Make sure Ollama is running: `ollama serve` |
 | Model is very slow | Try a smaller model: edit `.env` and set `MODEL=llama3.2:1b` |
 | Port 3000 is already in use | Edit `.env` and change `WEBUI_PORT` to another number (e.g., `3001`) |
-| Windows script won't run | Run: `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned` |
+| Windows: setup window flashes and closes | Right-click `setup.bat` → **Run as administrator**, or run it from an already-open PowerShell/Command Prompt so you can read any error |
 | Web UI shows a blank page on first launch | Wait about a minute — it downloads components on first start |
 | macOS asks for password during setup | This is the Ollama installer — enter your Mac login password |
 

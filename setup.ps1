@@ -1,4 +1,4 @@
-# ─── TBL4 Local LLM Setup (Windows) ─────────────────────────────────────────
+﻿# ─── TBL4 Local LLM Setup (Windows) ─────────────────────────────────────────
 # This script installs everything you need to run a local LLM with a web UI.
 # It is safe to run multiple times.
 #

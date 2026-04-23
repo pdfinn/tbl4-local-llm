@@ -1,4 +1,4 @@
-# ─── Tarkas Brainlab IV — Local LLM Teardown (Windows) ──────────────────────
+﻿# ─── Tarkas Brainlab IV — Local LLM Teardown (Windows) ──────────────────────
 # Safely removes the local LLM stack. Asks before each step.
 # Nothing is deleted without your confirmation.
 #
