@@ -82,13 +82,16 @@ OpenWebUI can call external **tools** from inside a chat — fetch a URL, save a
 
 ### Path 1: OpenAPI Tool Server (via n8n)
 
-The `tbl4-n8n` repo ships a `templates/tool-server.workflow.json` that publishes a single OpenAPI spec listing every classroom tool. One-time setup:
+On first run, the `tbl4-n8n` stack **auto-imports and activates** two workflows: `tool-server` (publishes the OpenAPI spec for the classroom) and `summarise-url` (the first reference tool). Students don't have to build or activate anything to see a working tool chain.
 
-1. In n8n, import `templates/tool-server.workflow.json` and **activate** it.
-2. In OpenWebUI → **Admin Settings → Tools → Tool Servers → Add Tool Server**:
-   - URL: `http://host.docker.internal:5678/webhook`
+One-time registration in OpenWebUI:
 
-As students build each Unit 2 exercise, they append a new path to the spec inside the tool-server workflow. The new tool shows up in OpenWebUI without any further registration.
+1. **Admin Settings → Tools → Tool Servers → Add Tool Server**
+2. URL: `http://host.docker.internal:5678/webhook`
+
+OpenWebUI fetches the spec and the `summariseUrl` tool appears in the list. Test in a new chat with *"summarise https://en.wikipedia.org/wiki/Singapore"*.
+
+As students build each Unit 2 exercise, they add their new workflow and then append a new path to the spec inside the tool-server workflow. The new tool shows up in OpenWebUI without re-registration.
 
 ### Path 2: MCP via mcpo (advanced)
 
