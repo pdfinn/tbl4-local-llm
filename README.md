@@ -77,19 +77,31 @@ Some good options:
 
 OpenWebUI can call external **tools** from inside a chat — fetch a URL, save a note, trigger an n8n workflow. Two ways to expose a tool:
 
-1. **OpenAPI / webhook** — register any HTTP endpoint under *Admin Settings → Tools* with an OpenAPI spec. Simplest option; works out of the box.
-2. **MCP (Model Context Protocol)** — the LLM discovers typed tools automatically. OpenWebUI's native MCP client is Streamable-HTTP only, so this stack ships **mcpo** (an MCP → OpenAPI proxy) to bridge the more common stdio and SSE MCP servers.
+1. **OpenAPI Tool Server** — OpenWebUI fetches an OpenAPI 3.x spec from a URL you register, then lets the LLM call the endpoints described in the spec. This is what our n8n exercises use.
+2. **MCP (Model Context Protocol)** — the LLM discovers typed tools automatically from a live protocol server. OpenWebUI's native MCP client is Streamable-HTTP only, so this stack ships **mcpo** (an MCP → OpenAPI proxy) to bridge the more common stdio and SSE MCP servers.
 
-mcpo is **opt-in**. To enable:
+### Path 1: OpenAPI Tool Server (via n8n)
 
-1. Add at least one server to [`mcpo.config.json`](mcpo.config.json) (it ships empty — mcpo refuses to start with an empty config).
+The `tbl4-n8n` repo ships a `templates/tool-server.workflow.json` that publishes a single OpenAPI spec listing every classroom tool. One-time setup:
+
+1. In n8n, import `templates/tool-server.workflow.json` and **activate** it.
+2. In OpenWebUI → **Admin Settings → Tools → Tool Servers → Add Tool Server**:
+   - URL: `http://host.docker.internal:5678/webhook/tools`
+
+As students build each Unit 2 exercise, they append a new path to the spec inside the tool-server workflow. The new tool shows up in OpenWebUI without any further registration.
+
+### Path 2: MCP via mcpo (advanced)
+
+mcpo is **opt-in** because it refuses to start with an empty config. To enable:
+
+1. Add at least one server to [`mcpo.config.json`](mcpo.config.json).
 2. Start mcpo alongside the main stack:
    ```bash
    docker compose --profile mcp up -d
    ```
-3. In OpenWebUI → *Admin Settings → Tools*, add `http://mcpo:8000/<server-name>`.
+3. In OpenWebUI → *Admin Settings → Tools → Tool Servers*, add `http://mcpo:8000/<server-name>`.
 
-See the `tbl4-n8n/templates/dual-trigger.workflow.json` template for a reusable pattern that exposes one n8n workflow as both a webhook *and* an MCP tool.
+See `tbl4-n8n/templates/dual-trigger.workflow.json` for a reusable pattern that exposes one n8n workflow as both an OpenAPI endpoint *and* an MCP tool.
 
 ## Using it next time
 
