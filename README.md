@@ -86,7 +86,7 @@ The `tbl4-n8n` repo ships a `templates/tool-server.workflow.json` that publishes
 
 1. In n8n, import `templates/tool-server.workflow.json` and **activate** it.
 2. In OpenWebUI → **Admin Settings → Tools → Tool Servers → Add Tool Server**:
-   - URL: `http://host.docker.internal:5678/webhook/tools`
+   - URL: `http://host.docker.internal:5678/webhook`
 
 As students build each Unit 2 exercise, they append a new path to the spec inside the tool-server workflow. The new tool shows up in OpenWebUI without any further registration.
 
