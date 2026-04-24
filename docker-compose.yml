@@ -1,6 +1,9 @@
 services:
   open-webui:
-    image: ghcr.io/open-webui/open-webui:main
+    # Pinned to the latest OpenWebUI release. Bump after verifying in class:
+    #   1. Check https://github.com/open-webui/open-webui/releases/latest
+    #   2. Update the tag below, then `docker compose pull && docker compose up -d`.
+    image: ghcr.io/open-webui/open-webui:v0.9.1
     container_name: open-webui
     ports:
       - "${WEBUI_PORT:-3000}:8080"
@@ -12,16 +15,26 @@ services:
       - WEBUI_SECRET_KEY=${WEBUI_SECRET_KEY}
     extra_hosts:
       - "host.docker.internal:host-gateway"
-    depends_on:
-      - mcpo
     restart: unless-stopped
 
   # MCP-to-OpenAPI proxy. OpenWebUI's native MCP support is Streamable-HTTP only;
   # mcpo lets us use stdio-based MCP servers (the common case) by exposing them
-  # as OpenAPI endpoints. Register each tool in OpenWebUI under
-  # Admin Settings → External Tools, using URLs like http://mcpo:8000/<name>.
+  # as OpenAPI endpoints. Opt-in: mcpo refuses to start with an empty config,
+  # so it's gated behind the `mcp` profile until students add an entry to
+  # mcpo.config.json. To enable:
+  #   1. Add at least one server to mcpo.config.json.
+  #   2. Run `docker compose --profile mcp up -d`.
+  # Register each tool in OpenWebUI under Admin Settings → External Tools,
+  # using URLs like http://mcpo:8000/<name>.
   mcpo:
-    image: ghcr.io/open-webui/mcpo:main
+    profiles: ["mcp"]
+    # mcpo does not publish semver tags; `:latest` is their convention for
+    # "most recent stable". Combined with `docker compose pull` in the setup
+    # scripts this stays current. If you want absolute reproducibility, swap
+    # this for a `git-<sha>` tag from
+    # https://github.com/open-webui/mcpo/pkgs/container/mcpo (verify the
+    # image's ENTRYPOINT is `mcpo` — not every SHA is).
+    image: ghcr.io/open-webui/mcpo:latest
     container_name: mcpo
     command: ["--config", "/config/mcpo.config.json", "--host", "0.0.0.0", "--port", "8000"]
     volumes:

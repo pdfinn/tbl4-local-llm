@@ -150,6 +150,8 @@ Info "Model '$Model' is ready"
 
 # ─── Start Open WebUI ────────────────────────────────────────────────────────
 Write-Host ""
+Write-Host "Fetching the pinned container images (first run only; fast on re-runs)..."
+& docker compose pull --quiet
 Write-Host "Starting Open WebUI..."
 & docker compose up -d
 Info "Open WebUI is running"

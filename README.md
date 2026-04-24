@@ -73,6 +73,24 @@ Some good options:
 | `mistral` | 7B | Longer, more detailed answers |
 | `llama3.2:1b` | 1B | Older/slower machines |
 
+## Advanced: MCP tool support
+
+OpenWebUI can call external **tools** from inside a chat — fetch a URL, save a note, trigger an n8n workflow. Two ways to expose a tool:
+
+1. **OpenAPI / webhook** — register any HTTP endpoint under *Admin Settings → Tools* with an OpenAPI spec. Simplest option; works out of the box.
+2. **MCP (Model Context Protocol)** — the LLM discovers typed tools automatically. OpenWebUI's native MCP client is Streamable-HTTP only, so this stack ships **mcpo** (an MCP → OpenAPI proxy) to bridge the more common stdio and SSE MCP servers.
+
+mcpo is **opt-in**. To enable:
+
+1. Add at least one server to [`mcpo.config.json`](mcpo.config.json) (it ships empty — mcpo refuses to start with an empty config).
+2. Start mcpo alongside the main stack:
+   ```bash
+   docker compose --profile mcp up -d
+   ```
+3. In OpenWebUI → *Admin Settings → Tools*, add `http://mcpo:8000/<server-name>`.
+
+See the `tbl4-n8n/templates/dual-trigger.workflow.json` template for a reusable pattern that exposes one n8n workflow as both a webhook *and* an MCP tool.
+
 ## Using it next time
 
 Just run the setup again — it is idempotent and will bring everything back up for you.
@@ -120,6 +138,8 @@ Double-click the file for your operating system:
 | macOS: "cannot be opened because it is from an unidentified developer" | Right-click `setup_macos.command` → **Open** → **Open**. You only need to do this once. |
 | macOS: Terminal window shows `zsh compinit: insecure directories` and then closes with `no such file or directory` | Your shell startup is prompting before the script can run. Open Terminal and run: `compaudit \| xargs chmod g-w,o-w` then double-click `setup_macos.command` again. |
 | Web UI shows a blank page on first launch | Wait about a minute — it downloads components on first start |
+| "Open WebUI version (vX.X.X) is lower than required" when adding a tool | Re-run the setup script — it now pulls the latest pinned image. For a manual fix: `docker compose pull && docker compose up -d` |
+| Need to turn on MCP support | Add a server to `mcpo.config.json`, then `docker compose --profile mcp up -d` |
 | macOS asks for password during setup | This is the Ollama installer — enter your Mac login password |
 
 ---

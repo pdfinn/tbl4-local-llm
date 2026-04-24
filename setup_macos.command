@@ -98,6 +98,8 @@ info "Model '${MODEL}' is ready"
 
 # ─── Start Open WebUI ────────────────────────────────────────────────────────
 echo ""
+echo "Fetching the pinned container images (first run only; fast on re-runs)..."
+docker compose pull --quiet
 echo "Starting Open WebUI..."
 docker compose up -d
 info "Open WebUI is running"
