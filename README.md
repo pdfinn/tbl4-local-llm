@@ -75,36 +75,39 @@ Some good options:
 
 ## Advanced: MCP tool support
 
-OpenWebUI can call external **tools** from inside a chat — fetch a URL, save a note, trigger an n8n workflow. Two ways to expose a tool:
+OpenWebUI calls **tools** from inside a chat — fetch a URL, save a note, trigger an n8n workflow. This stack ships two integration paths side by side; pick either (or both) based on what you want to teach.
 
-1. **OpenAPI Tool Server** — OpenWebUI fetches an OpenAPI 3.x spec from a URL you register, then lets the LLM call the endpoints described in the spec. This is what our n8n exercises use.
-2. **MCP (Model Context Protocol)** — the LLM discovers typed tools automatically from a live protocol server. OpenWebUI's native MCP client is Streamable-HTTP only, so this stack ships **mcpo** (an MCP → OpenAPI proxy) to bridge the more common stdio and SSE MCP servers.
+Both paths hit the **same underlying n8n worker workflow** (`summariseUrl`, webhook-triggered). The difference is purely how OpenWebUI discovers and invokes it.
 
-### Path 1: OpenAPI Tool Server (via n8n)
+### Path A — MCP Tool Server (direct, no proxy)
 
-On first run, the `tbl4-n8n` stack **auto-imports and activates** two workflows: `tool-server` (publishes the OpenAPI spec for the classroom) and `summarise-url` (the first reference tool). Students don't have to build or activate anything to see a working tool chain.
+n8n 2.18 ships an `MCP Server Trigger` node that exposes a Streamable-HTTP MCP endpoint. OpenWebUI v0.9 speaks Streamable HTTP natively. No mcpo needed.
 
-One-time registration in OpenWebUI:
+One-time registration:
 
-1. **Admin Settings → Tools → Tool Servers → Add Tool Server**
-2. URL: `http://host.docker.internal:5678/webhook`
+1. In **n8n** → open both `Summarise URL (classroom starter)` and `MCP Tools (for OpenWebUI)` → click **Publish** on each (top-right in the editor).
+2. In **OpenWebUI** → Admin Settings → Tools → Tool Servers → **Add Tool Server**:
+   - **Type:** MCP
+   - **URL:** `http://host.docker.internal:5678/webhook/mcpTools/mcp/tools`
+   - **Auth:** None
+3. Open a chat, pick `llama3.1:latest`, enable the tool in the composer, say *"summarise https://en.wikipedia.org/wiki/Singapore"*.
 
-OpenWebUI fetches the spec and the `summariseUrl` tool appears in the list. Test in a new chat with *"summarise https://en.wikipedia.org/wiki/Singapore"*.
+To add a new tool later: drop a worker workflow (any webhook-triggered chain) into n8n, then add an HTTP Request Tool node in the `MCP Tools` workflow wired to the new worker's URL, re-publish, refresh Tool Servers in OpenWebUI.
 
-As students build each Unit 2 exercise, they add their new workflow and then append a new path to the spec inside the tool-server workflow. The new tool shows up in OpenWebUI without re-registration.
+### Path B — OpenWebUI Tool (Python)
 
-### Path 2: MCP via mcpo (advanced)
+For the same capability, authored inside OpenWebUI as a short Python class. Good when you want to teach what a tool actually is at the wire level.
 
-mcpo is **opt-in** because it refuses to start with an empty config. To enable:
+1. In **n8n** → publish `Summarise URL (classroom starter)` (same as Path A).
+2. In **OpenWebUI** → Admin Settings → Tools → **Create New Tool**.
+3. Paste the contents of [`openwebui-tools/summarise_url.py`](openwebui-tools/summarise_url.py). Save.
+4. Open a chat, enable the tool, and use it the same way.
 
-1. Add at least one server to [`mcpo.config.json`](mcpo.config.json).
-2. Start mcpo alongside the main stack:
-   ```bash
-   docker compose --profile mcp up -d
-   ```
-3. In OpenWebUI → *Admin Settings → Tools → Tool Servers*, add `http://mcpo:8000/<server-name>`.
+The Python file is ~20 readable lines and does exactly one thing: POST to the n8n webhook, return the `summary` field. No magic. Students can inspect it, edit the webhook URL in the Valves, or copy it as a template for new tools.
 
-See `tbl4-n8n/templates/dual-trigger.workflow.json` for a reusable pattern that exposes one n8n workflow as both an OpenAPI endpoint *and* an MCP tool.
+### About mcpo
+
+The stack also ships **mcpo** (profile-gated, opt-in) as an MCP → OpenAPI proxy. You don't need it for the two paths above — OpenWebUI speaks MCP directly. mcpo is useful when you want to proxy **external** MCP servers (e.g. filesystem, GitHub) into OpenWebUI without running them as direct Tool Servers. Covered in Ex 12.
 
 ## Using it next time
 
