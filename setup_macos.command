@@ -29,6 +29,19 @@ if [ ! -f .env ]; then
     cp .env.example .env
     info "Created .env from .env.example"
 fi
+
+# Generate a WEBUI_SECRET_KEY on first run. OpenWebUI uses this to encrypt
+# OAuth credentials for MCP tools so they survive a container restart.
+if ! grep -Eq '^WEBUI_SECRET_KEY=.+' .env; then
+    SECRET=$(openssl rand -hex 32)
+    if grep -q '^WEBUI_SECRET_KEY=' .env; then
+        sed -i '' "s|^WEBUI_SECRET_KEY=.*|WEBUI_SECRET_KEY=${SECRET}|" .env
+    else
+        printf '\nWEBUI_SECRET_KEY=%s\n' "${SECRET}" >> .env
+    fi
+    info "Generated WEBUI_SECRET_KEY"
+fi
+
 source .env
 
 MODEL="${MODEL:-llama3.2}"

@@ -23,11 +23,35 @@ if (-not (Test-Path .env)) {
     Info "Created .env from .env.example"
 }
 
-$envVars = @{}
-Get-Content .env | ForEach-Object {
-    if ($_ -match '^\s*([^#][^=]+)=(.*)$') {
-        $envVars[$matches[1].Trim()] = $matches[2].Trim()
+function Read-EnvFile {
+    $vars = @{}
+    Get-Content .env | ForEach-Object {
+        if ($_ -match '^\s*([^#][^=]+)=(.*)$') {
+            $vars[$matches[1].Trim()] = $matches[2].Trim()
+        }
     }
+    return $vars
+}
+
+$envVars = Read-EnvFile
+
+# Generate a WEBUI_SECRET_KEY on first run. OpenWebUI uses this to encrypt
+# OAuth credentials for MCP tools so they survive a container restart.
+if (-not $envVars.ContainsKey("WEBUI_SECRET_KEY") -or [string]::IsNullOrEmpty($envVars["WEBUI_SECRET_KEY"])) {
+    $bytes = New-Object byte[] 32
+    [System.Security.Cryptography.RandomNumberGenerator]::Create().GetBytes($bytes)
+    $secret = ([BitConverter]::ToString($bytes) -replace '-', '').ToLower()
+
+    $envContent = Get-Content .env
+    if ($envContent -match '^WEBUI_SECRET_KEY=') {
+        $envContent = $envContent -replace '^WEBUI_SECRET_KEY=.*', "WEBUI_SECRET_KEY=$secret"
+        # Write with LF line endings to match the rest of the repo.
+        [System.IO.File]::WriteAllText((Resolve-Path .env), (($envContent -join "`n") + "`n"))
+    } else {
+        Add-Content .env "WEBUI_SECRET_KEY=$secret"
+    }
+    Info "Generated WEBUI_SECRET_KEY"
+    $envVars = Read-EnvFile
 }
 
 $Model = if ($envVars["MODEL"]) { $envVars["MODEL"] } else { "llama3.2" }
