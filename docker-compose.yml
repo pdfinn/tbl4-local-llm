@@ -3,7 +3,7 @@ services:
     # Pinned to the latest OpenWebUI release. Bump after verifying in class:
     #   1. Check https://github.com/open-webui/open-webui/releases/latest
     #   2. Update the tag below, then `docker compose pull && docker compose up -d`.
-    image: ghcr.io/open-webui/open-webui:v0.9.1
+    image: ghcr.io/open-webui/open-webui:v0.9.5
     container_name: open-webui
     ports:
       - "${WEBUI_PORT:-3000}:8080"
